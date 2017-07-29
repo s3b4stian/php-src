@@ -677,7 +677,7 @@ static ZEND_COLD void zend_verify_type_error_common(
 				*need_msg = "be an ";
 				*need_kind = "object";
 				break;
-                         case IS_RESOURCE:
+			case IS_RESOURCE:
 				*need_msg = "be a ";
 				*need_kind = "resource";
 				break;
