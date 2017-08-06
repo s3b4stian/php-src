@@ -1,6 +1,5 @@
 /*
  * charset=UTF-8
- * vim600: encoding=utf-8
  */
 
 /*
@@ -149,7 +148,7 @@ mbfl_buffer_converter_new(
 	/* create convert filter */
 	convd->filter1 = NULL;
 convd->filter2 = NULL;
-	if (mbfl_convert_filter_get_vtbl(convd->from->no_encoding, convd->to->no_encoding) != NULL) {
+	if (mbfl_convert_filter_get_vtbl(convd->from, convd->to) != NULL) {
 		convd->filter1 = mbfl_convert_filter_new(convd->from, convd->to, mbfl_memory_device_output, NULL, &convd->device);
 	} else {
 		convd->filter2 = mbfl_convert_filter_new(&mbfl_encoding_wchar, convd->to, mbfl_memory_device_output, NULL, &convd->device);
@@ -523,7 +522,7 @@ mbfl_convert_encoding(
 
 	filter1 = NULL;
 	filter2 = NULL;
-	if (mbfl_convert_filter_get_vtbl(string->encoding->no_encoding, toenc->no_encoding) != NULL) {
+	if (mbfl_convert_filter_get_vtbl(string->encoding, toenc) != NULL) {
 		filter1 = mbfl_convert_filter_new(string->encoding, toenc, mbfl_memory_device_output, 0, &device);
 	} else {
 		filter2 = mbfl_convert_filter_new(&mbfl_encoding_wchar, toenc, mbfl_memory_device_output, 0, &device);
@@ -1053,16 +1052,7 @@ mbfl_substr_count(
 	if (filter == NULL) {
 		return (size_t) -4;
 	}
-	p = needle->val;
-	n = needle->len;
-	if (p != NULL) {
-		while (n > 0) {
-			if ((*filter->filter_function)(*p++, filter) < 0) {
-				break;
-			}
-			n--;
-		}
-	}
+	mbfl_convert_filter_feed_string(filter, needle->val, needle->len);
 	mbfl_convert_filter_flush(filter);
 	mbfl_convert_filter_delete(filter);
 	pc.needle_len = pc.needle.pos;
